@@ -58,3 +58,12 @@ int node_size(node top){
 	}
 	return i;
 }
+
+void node_free(node top){
+	node next=top->next;
+	while(next!=top){
+		next=next->next;
+		free(next->prev);
+	}
+	free(top);
+}

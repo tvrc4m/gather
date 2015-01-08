@@ -2,7 +2,6 @@
 #include <string.h>
 #include "request.h"
 #include "common.h"
-#include "phone.h"
 
 size_t write_callback(void *buffer,size_t size,size_t nmemb,void * stream){
 	size_t result_len=size*nmemb;
@@ -12,6 +11,9 @@ size_t write_callback(void *buffer,size_t size,size_t nmemb,void * stream){
 }
 
 int fetch(const char *url,char *result,char *error){
+	printf("%s\n", "------------------------");
+	printf("-- 开始采集 %s --\n", url);
+	printf("%s\n", "------------------------");
 	curl=curl_easy_init();
 	curl_easy_setopt(curl,CURLOPT_URL,url);
 	curl_easy_setopt(curl,CURLOPT_TIMEOUT,180);
@@ -28,6 +30,7 @@ int req_foreach(node top){
 	node next=top->next;
 	while(next!=top){
 		if(next->data){
+			printf("next %s\n", next->data);
 			req_match(next->data);
 		}
 		next=next->next;
@@ -43,8 +46,8 @@ int req_match(const char *url){
 		printf("%s\n", error);
 	}
 
-	match(content, PHONE_REG_EXP,1,phone_top,phone_callback);
-	match(content, URL_REG_EXP,2,url_top,url_callback);
+	match_phone(content,phone_top);
+	match_url(content,url_top);
 	free(content);
 	return 1;
 }
