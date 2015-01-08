@@ -8,10 +8,6 @@
 
 #define FETCH_DATA_MAX_SIZE 1024*100
 
-
-
-
-
 char *host;
 
 node url_top;
@@ -32,10 +28,9 @@ int main(int argc,char **argv){
 	if(code!=CURLE_OK){
 		printf("%s\n", error);
 	}
-	char *matches[20];
 
-	match(result, PHONE_REG_EXP,phone_top,phone_callback);
-	match(result, URL_REG_EXP,url_top,url_callback);
+	match(result, PHONE_REG_EXP,1,phone_top,phone_callback);
+	match(result, URL_REG_EXP,2,url_top,url_callback);
 
 	node next=url_top->next;
 	while(next->next!=url_top){
