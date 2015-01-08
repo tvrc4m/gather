@@ -6,8 +6,6 @@
 
 #define count(x) (sizeof(x)/sizeof(x[0]))
 
-#define URL_REG_EXP "href=\"([^\"]+)\""
-#define PHONE_REG_EXP "[0-9]{6,11}"
 
 typedef void *match_callback(char *content,node top,int nmatch,regmatch_t *matches);
 

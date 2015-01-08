@@ -2,10 +2,16 @@
 #define REQUEST_H
 
 #include <curl/curl.h>
+#include "node.h"
+
+#define FETCH_DATA_MAX_SIZE 1024*100
 
 CURL *curl;
 
-int fetch(char *url,char *result,char *error);
+int fetch(const char *url,char *result,char *error);
 
+int req_foreach(node top);
+
+int req_match(const char *url);
 
 #endif
