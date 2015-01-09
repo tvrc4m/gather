@@ -45,7 +45,7 @@ int req_match(const char *url){
 	if(code!=CURLE_OK){
 		printf("%s\n", error);
 	}
-
+	
 	match_phone(content,phone_top);
 	match_url(content,url_top);
 	free(content);

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <regex.h>
 #include "common.h"
 #include "node.h"
@@ -46,8 +47,8 @@ void *url_callback(char *content,node top,int nmatch,regmatch_t *matches){
 			printf("%s\n", url);
 			node_push(top,url);
 		}
-		// free(url);
 	}
+	// free(url);
 	regfree(&reg);
 	return NULL;
 }
@@ -75,13 +76,13 @@ char *get_host(char *url){
 	return NULL;
 }
 
-void *check_compare(char *url){
+char *check_compare(char *url){
 	regex_t reg;
 	regcomp(&reg,host,REG_ICASE | REG_NOSUB);
-	if(regexec(&reg, url, 1, NULL, 0)==REG_NOMATCH){
+	if(regexec(&reg, url, 0, NULL, 0)==REG_NOMATCH){
 		if(start_with(url,"/")){
-			int len=count("http://")+count(host)+count(url);
-			char *latest=(char*)calloc(sizeof(char),len+1);
+			int len=strlen("http://")+strlen(host)+strlen(url);
+			char *latest=(char*)calloc(sizeof(char),len);
 			sprintf(latest,"%s%s%s","http://",host,url);
 			regfree(&reg);
 			return latest;

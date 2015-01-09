@@ -27,7 +27,7 @@ void match_url(char *content,node top);
 
 char *get_host(char *url);
 
-void *check_compare(char *url);
+char *check_compare(char *url);
 
 
 
