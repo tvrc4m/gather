@@ -6,12 +6,22 @@
 #include "node.h"
 
 #define URL_REG_EXP "href=\"([^\"]+)\""
-#define PHONE_REG_EXP "[0-9]{6,11}"
+#define PHONE_REG_EXP "[0-9]{7,11}"
 #define HOST_REG_EXP "http://([^/]+)"
 
-char *url_except="javascript|css|js|jpg|png|ttf|gif|ico";
+#define PHONE_NO_VALID_DATE_EXP "20[0-2][0-9][0-9][0-2][0-3][0-9]{1,6}"
+
+char *url_except="javascript|css|js|jpg|png|ttf|gif|ico|rss";
 
 extern char *host;
+
+char *check_phone(char *phone){
+	regex_t reg;	regcomp(&reg, PHONE_NO_VALID_DATE_EXP, REG_EXTENDED | REG_NOSUB);
+	if(regexec(&reg, phone, 1, NULL, 0)==REG_NOMATCH){
+		return phone;
+	}
+	return NULL;
+}
 
 void match(char *content,char *pattern,int nmatch,node top,match_callback callback){
 	regex_t reg;
@@ -29,8 +39,10 @@ void *phone_callback(char *content,node top,int nmatch,regmatch_t *matches){
 	int end=matches[0].rm_eo;
 	char *phone=(char*)calloc(sizeof(char*),end-start);
 	substr(content,phone,start,end);
-	printf("%s\n", phone);
-	node_push(top,phone);
+	if(check_phone(phone)!=NULL){
+		log_info(phone);
+		node_push(top,phone);
+	}
 	return NULL;
 }
 
@@ -44,11 +56,9 @@ void *url_callback(char *content,node top,int nmatch,regmatch_t *matches){
 	if(regexec(&reg,url,1,NULL,0)==REG_NOMATCH){
 		url=check_compare(url);
 		if(url!=NULL){
-			printf("%s\n", url);
 			node_push(top,url);
 		}
 	}
-	// free(url);
 	regfree(&reg);
 	return NULL;
 }
@@ -77,19 +87,26 @@ char *get_host(char *url){
 }
 
 char *check_compare(char *url){
-	regex_t reg;
-	regcomp(&reg,host,REG_ICASE | REG_NOSUB);
-	if(regexec(&reg, url, 0, NULL, 0)==REG_NOMATCH){
-		if(start_with(url,"/")){
-			int len=strlen("http://")+strlen(host)+strlen(url);
-			char *latest=(char*)calloc(sizeof(char),len);
-			sprintf(latest,"%s%s%s","http://",host,url);
-			regfree(&reg);
-			return latest;
+	
+	char *domain=host;
+	if(start_with(host,"www")){
+		domain=strchr(host,'.')+1;
+	}
+	extern char *request;
+	char *current=get_host(request);
+	if(start_with(url,"/")){
+		int len=strlen("http://")+strlen(current)+strlen(url);
+		char *latest=(char*)calloc(sizeof(char),len);
+		sprintf(latest,"%s%s%s","http://",current,url);
+		// printf("%s\n", latest);
+		return latest;
+	}else{
+		if(strstr(url, domain)!=NULL){
+			printf("%s\n", url);
+			return url;
 		}
 	}
-	regfree(&reg);
 	return NULL;
-
 }
+
 

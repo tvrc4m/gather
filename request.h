@@ -8,6 +8,8 @@
 
 CURL *curl;
 
+char *request;
+
 int fetch(const char *url,char *result,char *error);
 
 int req_foreach(node top);

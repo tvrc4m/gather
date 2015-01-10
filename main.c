@@ -5,9 +5,6 @@
 
 char *host;
 
-extern node phone_top;
-extern node url_top;
-
 int main(int argc,char **argv){
 
 	char *url=argv[1];
@@ -29,7 +26,7 @@ int main(int argc,char **argv){
 		printf("%s\n", next->data);
 		next=next->next;
 	}
-	printf("%s\n", "free");
+	
 	node_free(url_top);
 	node_free(phone_top);
 
