@@ -24,13 +24,15 @@ int end_with(const char *src,const char *end){
 }
 
 char *str_replace(char *src,char *find,char *replace){
+	// TODO 
 	return NULL;
 }
 
 int log_info(char *text){
 	extern char *host;
 	extern char *request;
-	FILE *file=fopen("/tmp/phone.log","a+");
+	// FILE *file=fopen("/tmp/phone.log","a+");
+	FILE *file=fopen("C:/phone.log","a+");
 	if(fputs(text, file)==EOF){
 		perror("fputs():");
 		printf("%s      %s\n",request, text);

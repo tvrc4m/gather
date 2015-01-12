@@ -9,7 +9,7 @@
 #define PHONE_REG_EXP "[0-9]{7,11}"
 #define HOST_REG_EXP "http://([^/]+)"
 
-#define PHONE_NO_VALID_DATE_EXP "20[0-2][0-9][0-9][0-2][0-3][0-9]{1,6}"
+#define PHONE_NO_VALID_DATE_EXP "20[0-2][0-9][0-9][0-2][0-3][0-9]{0,6}"
 
 char *url_except="javascript|css|js|jpg|png|ttf|gif|ico|rss";
 
@@ -19,6 +19,27 @@ char *check_phone(char *phone){
 	regex_t reg;	regcomp(&reg, PHONE_NO_VALID_DATE_EXP, REG_EXTENDED | REG_NOSUB);
 	if(regexec(&reg, phone, 1, NULL, 0)==REG_NOMATCH){
 		return phone;
+	}
+	return NULL;
+}
+
+char *check_url(char *url){
+	
+	char *domain=host;
+	if(start_with(host,"www")){
+		domain=strchr(host,'.')+1;
+	}
+	extern char *request;
+	char *current=get_host(request);
+	if(start_with(url,"/")){
+		int len=strlen("http://")+strlen(current)+strlen(url);
+		char *latest=(char*)calloc(sizeof(char),len);
+		sprintf(latest,"%s%s%s","http://",current,url);
+		return latest;
+	}else{
+		if(strstr(url, domain)!=NULL){
+			return url;
+		}
 	}
 	return NULL;
 }
@@ -54,7 +75,7 @@ void *url_callback(char *content,node top,int nmatch,regmatch_t *matches){
 	regex_t reg;
 	regcomp(&reg,url_except,REG_EXTENDED | REG_NOSUB | REG_ICASE);
 	if(regexec(&reg,url,1,NULL,0)==REG_NOMATCH){
-		url=check_compare(url);
+		url=check_url(url);
 		if(url!=NULL){
 			node_push(top,url);
 		}
@@ -82,29 +103,6 @@ char *get_host(char *url){
 		substr(url,host,start,end);
 		regfree(&reg);
 		return host;
-	}
-	return NULL;
-}
-
-char *check_compare(char *url){
-	
-	char *domain=host;
-	if(start_with(host,"www")){
-		domain=strchr(host,'.')+1;
-	}
-	extern char *request;
-	char *current=get_host(request);
-	if(start_with(url,"/")){
-		int len=strlen("http://")+strlen(current)+strlen(url);
-		char *latest=(char*)calloc(sizeof(char),len);
-		sprintf(latest,"%s%s%s","http://",current,url);
-		// printf("%s\n", latest);
-		return latest;
-	}else{
-		if(strstr(url, domain)!=NULL){
-			printf("%s\n", url);
-			return url;
-		}
 	}
 	return NULL;
 }
